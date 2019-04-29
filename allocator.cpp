@@ -43,23 +43,22 @@ struct logging_allocator {
 };
 
 int main(int, char *[]) {
-//    auto v = std::vector<int, AllocatorForOtus<int>>{};
 
-//    v.reserve(5);
-
-//    for (size_t i = 0; i < 1 /* 5 */; ++i) {
-//        v.emplace_back(i);
-//        std::cout << std::endl;
-//    }
-
-
+    uint upper_bound = 10;
     auto m = std::map<int, int, std::less<int>, AllocatorForOtus<std::pair<const int, int>,10>>{};
 //    auto m = std::map<int, int>{};
-//    m.reserve(10);
-    for (size_t i = 0; i < 5; ++i) {
+
+    for (size_t i = 0; i < upper_bound; ++i) {
         m[i] = i;
         std::cout << std::endl;
     }
+    std::cout<<"============= get total ============="<< std::endl;
+    for (size_t i = 0; i < upper_bound; ++i) {
+
+        std::cout << m.at(i)<< " ";
+    }
+    std::cout<<std::endl;
+
 
     return 0;
 }

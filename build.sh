@@ -2,7 +2,7 @@ mkdir ./build
 cd ./build
 cmake ..
 make -j4
-./allocator
-#echo "starting tests"
+#./allocator
 #ltrace -e malloc -e free ./allocator > /dev/null
-#./ip_filter_test
+#valgrind --tool=memcheck ./allocator 
+valgrind --leak-check=full  ./allocator
