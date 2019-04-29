@@ -1,7 +1,22 @@
 #ifndef ALLOCATORFOROTUS_H
 #define ALLOCATORFOROTUS_H
 
+#include <iostream>
+
+
 template <typename T>
+struct HoldingNode{
+    ~HoldingNode(){
+        free(pnt);
+    }
+
+    T * pnt;
+    HoldingNode<T> *m_prevNode;
+    HoldingNode<T> *m_nextNode;
+};
+
+
+template <typename T, std::size_t CNT_RESERVE>
 class AllocatorForOtus{
 public:
     typedef T value_type;
@@ -12,24 +27,30 @@ public:
     typedef std::size_t size_type;
     typedef std::ptrdiff_t difference_type;
 
-public:
+public:        
+
+
+
     template<typename U>
     struct rebind {
-        typedef AllocatorForOtus<U> other;
+        typedef AllocatorForOtus<U,CNT_RESERVE> other;
     };
 
 
     T *allocate(std::size_t n) {
-        std::cout << __PRETTY_FUNCTION__ << "[n = " << n << "]" << std::endl;
+        std::cout << __PRETTY_FUNCTION__ << "[n = " << n << "]" << std::endl;        
+
         auto p = std::malloc(n * sizeof(T));
         if (!p)
             throw std::bad_alloc();
+
         return reinterpret_cast<T *>(p);
     }
 
+
     void deallocate(T *p, std::size_t n) {
         std::cout << __PRETTY_FUNCTION__ << "[n = " << n << "]" << std::endl;
-        std::free(p);
+//        std::free(p);
     }
 
     template<typename U, typename ...Args>
@@ -40,8 +61,21 @@ public:
 
     void destroy(T *p) {
         std::cout << __PRETTY_FUNCTION__ << std::endl;
-        p->~T();
+         HoldingNode<T> *tmpNode = m_baseNode;
+        for(int i=0; i< CNT_RESERVE; i++){
+            if( p == tmpNode->pnt){
+                HoldingNode<T> *bufNode1 = tmpNode->m_nextNode;
+                if(bufNode1 != nullptr && bufNode1->m_prevNode != nullptr){
+
+                }
+            }
+        }
+//        p->~T();
     }
+
+private:
+    HoldingNode<T> *m_baseNode;
+
 };
 
 
