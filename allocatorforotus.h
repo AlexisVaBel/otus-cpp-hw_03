@@ -8,7 +8,7 @@ class AllocatorChunks{
 public:
     ~AllocatorChunks(){
         delete m_prev;
-        std::cout << __PRETTY_FUNCTION__ << "[pnt = "  << "]" <<pnt<< std::endl;
+        std::cout << __PRETTY_FUNCTION__ << "[deleted = "<< pnt << "]" << std::endl;
         std::free(pnt);
     }
     AllocatorChunks<U> *m_prev;
@@ -40,56 +40,54 @@ public:
         // Allocated ones proportional to CNT_RESERVE
 
         if(bPassed && (m_iConstructed >= m_szLimit) ){
-            std::cout << "over limit "<< m_szLimit << " actual: "<<m_iConstructed*m_szStep<< std::endl;
             bPassed = false;
-            AllocatorChunks<T> * nextChunk =new AllocatorChunks<T>();
+            AllocatorChunks<value_type> * nextChunk =new AllocatorChunks<value_type>();
             nextChunk->m_prev = m_currentChunk;
             m_currentChunk = nextChunk;
         }
         if(!bPassed){
             bPassed = true;
             if(m_currentChunk == nullptr){
-                m_currentChunk = new AllocatorChunks<T>();
+                m_currentChunk = new AllocatorChunks<value_type>();
             }
 
             m_iConstructed = 0;
-            m_szStep = n * sizeof(T);
+            m_szStep = n * sizeof(value_type);
             m_szLimit = m_szStep * CNT_RESERVE;
-            std::cout << __PRETTY_FUNCTION__ << " with limit "<< m_szLimit << std::endl;
+
 
             auto p = std::malloc(m_szStep * CNT_RESERVE);
             if (!p)
                 throw std::bad_alloc();
 
-            m_currentChunk->pnt =  reinterpret_cast<T *>(p);
+            m_currentChunk->pnt =  reinterpret_cast<pointer>(p);
 
-            std::cout << m_currentChunk->pnt << std::endl;
             return m_currentChunk->pnt;
         }
+        //~ Allocated ones proportional to CNT_RESERVE
 
-        m_iConstructed+= m_szStep;
-        std::cout << m_currentChunk->pnt +m_iConstructed<< std::endl;
+        m_iConstructed+= m_szStep;        
         return m_currentChunk->pnt+m_iConstructed;
     }
 
 
-    void deallocate(T *p, std::size_t n) {
-        if(!bDestroyed){
-            std::cout << __PRETTY_FUNCTION__ << std::endl;
+    void deallocate(T *p, std::size_t n)
+    {
+
+        if(!bDestroyed){            
             bDestroyed = true;
             delete m_currentChunk;
         }
     }
 
     template<typename U, typename ...Args>
-    void construct(U *p, Args &&...args) {
-        std::cout << __PRETTY_FUNCTION__ << std::endl;       
+    void construct(U *p, Args &&...args)
+    {
         new(p) U(std::forward<Args>(args)...);
     }
 
     void destroy(T *p) {        
-        // can destroy data, while already have no rules for that space??? need to ask question for Dmitr
-        std::cout << __PRETTY_FUNCTION__ <<" pnt "<<p<< std::endl;
+        // can destroy data, while already have no rules for that space??? , if its ok?
         p->~T();
     }
 
@@ -97,10 +95,10 @@ private:
     bool bPassed;
     bool bDestroyed;
     int m_iConstructed;
-    std::size_t m_szStep;
-    std::size_t m_szLimit;
+    size_type m_szStep;
+    size_type m_szLimit;
 
-    AllocatorChunks<T> *m_currentChunk;
+    AllocatorChunks<value_type> *m_currentChunk;
 
 };
 

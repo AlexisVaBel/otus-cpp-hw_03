@@ -2,61 +2,43 @@
 #include <vector>
 #include <map>
 #include "allocatorforotus.h"
-
-template<typename T>
-struct logging_allocator {
-    using value_type = T;
-
-    using pointer = T*;
-    using const_pointer = const T*;
-    using reference = T&;
-    using const_reference = const T&;
-
-    template<typename U>
-    struct rebind {
-        using other = logging_allocator<U>;
-    };
-
-    T *allocate(std::size_t n) {
-        std::cout << __PRETTY_FUNCTION__ << "[n = " << n << "]" << std::endl;
-        auto p = std::malloc(n * sizeof(T));
-        if (!p)
-            throw std::bad_alloc();
-        return reinterpret_cast<T *>(p);
-    }
-
-    void deallocate(T *p, std::size_t n) {
-        std::cout << __PRETTY_FUNCTION__ << "[n = " << n << "]" << std::endl;
-        std::free(p);
-    }
-
-    template<typename U, typename ...Args>
-    void construct(U *p, Args &&...args) {
-        std::cout << __PRETTY_FUNCTION__ << std::endl;
-        new(p) U(std::forward<Args>(args)...);
-    }
-
-    void destroy(T *p) {
-        std::cout << __PRETTY_FUNCTION__ << std::endl;
-        p->~T();
-    }
-};
+#include "otus_map.h"
+#include "otus_vector.h"
 
 int main(int, char *[]) {
 
     uint upper_bound = 10;
-    auto m = std::map<int, int, std::less<int>, AllocatorForOtus<std::pair<const int, int>,10>>{};
+
+    auto vct = OtusVector<int, AllocatorForOtus<int,10>>(upper_bound);
+
+
+
+
+    std::cout<< vct.begin() <<std::endl;
+    std::cout<< vct.end() <<std::endl;
+    for (size_t i = 0; i < upper_bound; ++i) {
+        vct.push_back(i);
+    }
+    std::cout<< vct.begin() <<std::endl;
+    std::cout<< vct.end() <<std::endl;
+
+
+//    auto m = Otus_map<int,int>();
+
+
+
+//    auto m = std::map<int, int, std::less<int>, AllocatorForOtus<std::pair<const int, int>,10>>();
 //    auto m = std::map<int, int>{};
 
-    for (size_t i = 0; i < upper_bound; ++i) {
-        m[i] = i;
-        std::cout << std::endl;
-    }
-    std::cout<<"============= get total ============="<< std::endl;
-    for (size_t i = 0; i < upper_bound; ++i) {
+//    for (size_t i = 0; i < upper_bound; ++i) {
+//        m[i] = i;
+//        std::cout << std::endl;
+//    }
+//    std::cout<<"============= get total ============="<< std::endl;
+//    for (size_t i = 0; i < upper_bound; ++i) {
 
-        std::cout << m.at(i)<< " ";
-    }
+//        std::cout << m.at(i)<< " ";
+//    }
     std::cout<<std::endl;
 
 
@@ -80,3 +62,4 @@ int main(int, char *[]) {
 
 //fl<foo> l;
 //l.add(1,2);
+//https://medium.com/@vgasparyan1995/how-to-write-an-stl-compatible-container-fc5b994462c6
