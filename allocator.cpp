@@ -7,28 +7,30 @@
 
 int main(int, char *[]) {
 
-    uint upper_bound = 10;
-
-    auto vct = OtusVector<int, AllocatorForOtus<int,10>>(upper_bound);
-
-
+    uint upper_bound = 1;
+    auto vct = OtusVector<int,AllocatorForOtus<int,4>>();
+//    auto vct = OtusVector<int>();
 
 
-    std::cout<< vct.begin() <<std::endl;
-    std::cout<< vct.end() <<std::endl;
+//    vct.begin();
+//    std::cout<< vct.end() <<std::endl;
     for (size_t i = 0; i < upper_bound; ++i) {
         vct.push_back(i);
     }
-    std::cout<< vct.begin() <<std::endl;
-    std::cout<< vct.end() <<std::endl;
+//    for(auto i = vct.begin(); i< vct.end(); ++i){
+//        std::cout<< *i <<std::endl;
+//    }
 
 
-//    auto m = Otus_map<int,int>();
+
+
 
 
 
 //    auto m = std::map<int, int, std::less<int>, AllocatorForOtus<std::pair<const int, int>,10>>();
 //    auto m = std::map<int, int>{};
+
+//     m[0] = 1;
 
 //    for (size_t i = 0; i < upper_bound; ++i) {
 //        m[i] = i;
@@ -39,7 +41,7 @@ int main(int, char *[]) {
 
 //        std::cout << m.at(i)<< " ";
 //    }
-    std::cout<<std::endl;
+//    std::cout<<std::endl;
 
 
     return 0;
@@ -50,9 +52,7 @@ int main(int, char *[]) {
 
 // ИНФА из лекции GOF2 allocator;
 // идеальная передача
-//ДЛЯ контейнера: методы для добавления элементов,
-//                для аллокатора воспроизвести идеальную передачу для сконструирования объекта.
-// подумать о перемещении и копировании в структуре данных
+
 //struct foo{
 //    int a;
 //    int b;

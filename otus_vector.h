@@ -6,92 +6,114 @@
 #include <memory>
 #include <functional>
 
-const int MIN_VCT_SIZE = 4;
+//ƒЋя контейнера: методы дл€ добавлени€ элементов,
+//                дл€ аллокатора воспроизвести идеальную передачу дл€ сконструировани€ объекта.
+// подумать о перемещении и копировании в структуре данных
+
+const int MIN_VCT_SIZE = 1;
 
 template <class T,
           class Allocator = std::allocator<T>
           >
 class  OtusVector {
 public:
+// types
     using allocator_type    = Allocator;
-    using iterator          = T*;
-    using reference         = T&;
-    using pointer           = typename std::allocator_traits<allocator_type>::pointer;
+    using value_type        = typename allocator_type::value_type;
+    using reference         = typename allocator_type::reference;
+    using pointer           = typename allocator_type::pointer;
+    using const_reference   = typename allocator_type::const_reference;
+    using difference_type   = typename allocator_type::difference_type;
+    using size_type         = typename allocator_type::size_type;
+    using iterator          = typename allocator_type::pointer;
+//~ types
 
 
-/*
-    explicit vector (const allocator_type& alloc = allocator_type());
-
-    explicit vector (size_type n);
-             vector (size_type n, const value_type& val,
-                     const allocator_type& alloc = allocator_type());
-*/
-    explicit OtusVector (const allocator_type& alloc = allocator_type()){
-
-    }
-
-    OtusVector(): m_array(new T[MIN_VCT_SIZE]),reserved_size(MIN_VCT_SIZE), size(0){
-
-    }
-
-    OtusVector(int n): m_array(new T[n]),reserved_size(n + MIN_VCT_SIZE), size(0){}
-
-    ~OtusVector() {
-        delete[] m_array;
+// constructor destructor section
+    OtusVector(std::size_t capacity, allocator_type alloc ={}): m_size(0), m_capacity(capacity+MIN_VCT_SIZE), m_alloc(alloc)
+      , m_data(alloc.allocate(capacity+MIN_VCT_SIZE)){
     }
 
 
-    template<typename ... Args> reference emplace_back(Args&&... args);
+    OtusVector(allocator_type alloc = {}): m_size(0),  m_capacity(MIN_VCT_SIZE), m_alloc(alloc)
+      , m_data(alloc.allocate(MIN_VCT_SIZE)){
+    }
 
+    OtusVector(const OtusVector&){
+//        std::cout << __PRETTY_FUNCTION__ <<" 3 allocate "<<m_data<< std::endl;
+    }
 
+    OtusVector(const OtusVector&& a)noexcept{
 
-    pointer allocate(size_t n){
-        std::allocator_traits<allocator_type> _Tr;
-//        _Tr::allocate();
+    }
+
+    ~OtusVector(){
+        m_alloc.deallocate(m_data,m_size);
+        m_alloc.~Allocator();
     }
 
 
-    void push_back(const T &t)
-    {
-        if(size == reserved_size)
-            resize(reserved_size + MIN_VCT_SIZE);
+    OtusVector& operator=(const OtusVector&){
+        //todo
+    }
+//~ constructor destructor section
 
-        m_array[size] = t;
-        size++;
+    bool operator==(const OtusVector&) const{
+        //todo
+    }
+    bool operator!=(const OtusVector&) const{
+        //todo
     }
 
-    void resize(int n)
-    {
-        if(n > reserved_size)
-        {
-            auto new_array(new T[n]);
-            std::copy ( m_array, m_array+size, new_array);
-            delete [] m_array;
-            m_array = new_array;
-            reserved_size = n;  // increasing size;
-        }
+    iterator begin(){
+        return m_data;
+    }
+
+    iterator end(){
+        return m_data+m_size;
+    }
+
+    void swap(OtusVector&);
+    size_type size() const {
+        return m_size;
+    }
+
+    size_type max_size() const{
+        return m_capacity;
+    }
+    bool empty() const{
+        return m_size == 0;
+    }
+
+    allocator_type get_allocator() const{
+        return m_alloc;
     }
 
 
-
-    iterator begin()
-    {
-        std::cout << __PRETTY_FUNCTION__ << std::endl;
-        return m_array;
+    void push_back(T &&t){
+        if(m_size >= m_capacity){
+            std::cout << __PRETTY_FUNCTION__<<std::endl;
+            m_capacity +=m_size;
+            resize(m_capacity);
+        };
+        (m_data[m_size]) = (std::forward<T> (t));
+        ++m_size;
     }
 
-
-    iterator end()
-    {
-        std::cout << __PRETTY_FUNCTION__ <<" size is " << reserved_size << std::endl;
-        return m_array + size;
+    void resize(size_type szNew){
+        // todo need to think about resizing
+        T *tmp_data(m_alloc.allocate(szNew));
+        std::copy(m_data,m_data+m_size,tmp_data);
+        m_alloc.deallocate(m_data,m_size);
+        m_data = tmp_data;
     }
+
 
 private:
-    T * m_array;
+    size_type m_size;
+    size_type m_capacity;
+    allocator_type m_alloc;
+    T *m_data;
 
-    allocator_type  *m_alloc;
-    int size;
-    int reserved_size;
 };
 #endif // OTUS_VECTOR_H

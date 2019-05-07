@@ -7,9 +7,10 @@ template <typename U>
 class AllocatorChunks{
 public:
     ~AllocatorChunks(){
-        delete m_prev;
-        std::cout << __PRETTY_FUNCTION__ << "[deleted = "<< pnt << "]" << std::endl;
+        if(m_prev)
+            delete m_prev;
         std::free(pnt);
+
     }
     AllocatorChunks<U> *m_prev;
     U *pnt;
@@ -34,6 +35,9 @@ public:
         typedef AllocatorForOtus<U,CNT_RESERVE> other;
     };
 
+    ~AllocatorForOtus() _GLIBCXX_USE_NOEXCEPT {
+        delete m_currentChunk;
+    }
 
     T *allocate(std::size_t n) {
 
@@ -43,20 +47,19 @@ public:
             bPassed = false;
             AllocatorChunks<value_type> * nextChunk =new AllocatorChunks<value_type>();
             nextChunk->m_prev = m_currentChunk;
-            m_currentChunk = nextChunk;
+            m_currentChunk = nextChunk;            
         }
         if(!bPassed){
             bPassed = true;
             if(m_currentChunk == nullptr){
                 m_currentChunk = new AllocatorChunks<value_type>();
-            }
-
+            }            
             m_iConstructed = 0;
             m_szStep = n * sizeof(value_type);
             m_szLimit = m_szStep * CNT_RESERVE;
 
 
-            auto p = std::malloc(m_szStep * CNT_RESERVE);
+            auto p = std::malloc((value_type) (m_szStep * CNT_RESERVE));
             if (!p)
                 throw std::bad_alloc();
 
@@ -73,7 +76,6 @@ public:
 
     void deallocate(T *p, std::size_t n)
     {
-
         if(!bDestroyed){            
             bDestroyed = true;
             delete m_currentChunk;
