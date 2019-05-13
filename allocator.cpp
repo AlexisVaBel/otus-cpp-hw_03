@@ -4,29 +4,11 @@
 #include "allocatorforotus.h"
 #include "allocs/allocatorpull.h"
 #include "otus_map.h"
-#include "otus_vector.h"
+
 
 int main(int, char *[]) {
 
     uint upper_bound = 5;
-    auto vct = OtusVector<int,AllocatorPull<int,10>>();
-//    auto vct = OtusVector<int>();
-
-
-//    vct.begin();
-//    std::cout<< vct.end() <<std::endl;
-    for (size_t i = 0; i < upper_bound; ++i) {
-        vct.push_back(i);
-    }
-//    for(auto i = vct.begin(); i< vct.end(); ++i){
-//        std::cout<< *i <<std::endl;
-//    }
-
-
-
-
-
-
 
 
 //    auto m = std::map<int, int, std::less<int>, AllocatorPull<std::pair<const int, int>,10>>();
