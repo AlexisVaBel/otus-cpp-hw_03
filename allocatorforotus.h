@@ -59,7 +59,7 @@ public:
             m_szLimit = m_szStep * CNT_RESERVE;
 
 
-            auto p = std::malloc((value_type) (m_szStep * CNT_RESERVE));
+            auto p = std::malloc(m_szLimit);
             if (!p)
                 throw std::bad_alloc();
 
@@ -76,10 +76,10 @@ public:
 
     void deallocate(T *p, std::size_t n)
     {
-        if(!bDestroyed){            
-            bDestroyed = true;
-            delete m_currentChunk;
-        }
+//        if(!bDestroyed){
+//            bDestroyed = true;
+//            delete m_currentChunk;
+//        }
     }
 
     template<typename U, typename ...Args>
