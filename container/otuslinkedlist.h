@@ -8,7 +8,7 @@
 template <class U>
 struct OtusListNode
 {
-    OtusListNode(U someU):m_pointer(someU){
+    OtusListNode(U someU):m_holdingVal(someU){
 
     }
 
@@ -19,7 +19,7 @@ struct OtusListNode
 
     OtusListNode<U> *m_next;
     OtusListNode<U> *m_previos;
-    U   m_pointer;
+    U   m_holdingVal;
 };
 
 template <class T,
@@ -44,10 +44,15 @@ public:
 
     void append(T someT){
         m_alloc.construct(m_pnt,someT);
+        auto p = m_alloc.allocate(1);
+        m_pnt->m_next = p;
+        m_pnt = p;
     }
 
+
     T last(){
-        return m_pnt->m_pointer;
+        auto t = m_pnt->m_holdingVal;
+        return t;
     }
 
 
