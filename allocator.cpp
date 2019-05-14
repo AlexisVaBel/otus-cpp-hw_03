@@ -1,15 +1,33 @@
 #include <iostream>
 #include <vector>
 #include <map>
-#include "allocatorforotus.h"
+
+#include "container/arraylist.h"
+#include "container/otuslinkedlist.h"
 #include "allocs/allocatorpull.h"
-#include "otus_map.h"
+
 
 
 int main(int, char *[]) {
 
     uint upper_bound = 5;
 
+//    auto lst = new OtusLinkeList<int, AllocatorPull<OtusListNode<int>,10>>();
+    auto lst = new OtusLinkeList<int>();
+    lst->append(10);
+    std::cout<< lst->last() << std::endl;
+    delete  lst;
+
+//    auto alst =new otus_container::ArrayList<int,AllocatorPull<int,10>>();
+//    for (size_t i = 0; i < upper_bound; ++i) {
+//        alst->add(i);
+//    }
+
+//    for (size_t i = 0; i < upper_bound; ++i) {
+//        std::cout<< alst->at(i) << " ";
+//    }
+//    std::cout << std::endl;
+//    delete alst;
 
 //    auto m = std::map<int, int, std::less<int>, AllocatorPull<std::pair<const int, int>,10>>();
 //    auto m = std::map<int, int>{};
@@ -23,6 +41,7 @@ int main(int, char *[]) {
 
 //        std::cout << m.at(i)<< " ";
 //    }
+
 
     return 0;
 }

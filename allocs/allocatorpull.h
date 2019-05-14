@@ -14,16 +14,14 @@ class PullChunk{
 public:
     ~PullChunk(){
         delete m_next;
+        m_next = nullptr;
         delete m_pnt; //
     }
-
-
 
     size_type m_szLimit;
     size_type m_szStep;
 
     size_type m_szNextStep;
-
 
     pointer m_pnt;
     PullChunk<value_type> *m_next;
@@ -50,16 +48,16 @@ public:
     };
 
     ~AllocatorPull() noexcept {
-        delete m_pnt;
+        delete m_baseChunk;
     }
 
     pointer allocate(std::size_t n)
     {
         if(m_baseChunk == nullptr){
-            m_baseChunk         = new PullChunk<value_type>();
-            m_baseChunk->m_next = nullptr;
+            m_baseChunk               = new PullChunk<value_type>();
+            m_baseChunk->m_next       = nullptr;
             m_baseChunk->m_szStep     = n * sizeof(value_type);
-            m_baseChunk->m_szLimit     = n * sizeof(value_type) * CNT_RESERVE;
+            m_baseChunk->m_szLimit    = n * sizeof(value_type) * CNT_RESERVE;
             m_baseChunk->m_szNextStep = 0;
             auto p = std::malloc(m_baseChunk->m_szLimit);
             if (!p)
@@ -81,27 +79,12 @@ public:
             m_curChunk = tmpNext;
         }else
             m_curChunk->m_szNextStep = m_curChunk->m_szNextStep + m_curChunk->m_szStep;
-        return m_curChunk->m_pnt + m_curChunk->m_szNextStep;
-        /*
-        if(m_szStep == 0){
-            m_szStep = n * sizeof(value_type);
-            m_szNextStep = 0;
-        }else m_szNextStep+=m_szStep;
-
-        m_szLimit = m_szStep * CNT_RESERVE;
-        if(m_pnt == nullptr){
-            auto p = std::malloc(m_szLimit);
-            if (!p)
-                throw std::bad_alloc();
-            m_pnt = reinterpret_cast<pointer>(p);
-        };
-        return  m_pnt+m_szNextStep;
-        */
+        return m_curChunk->m_pnt + m_curChunk->m_szNextStep;        
     }
 
     void deallocate(T *p, std::size_t n)
     {
-        std::cout << __PRETTY_FUNCTION__<< std::endl;
+//        std::cout << __PRETTY_FUNCTION__<< std::endl;
 //       not freeing here, maybe mark chunk is free
     }
 
@@ -112,15 +95,11 @@ public:
     }
 
     void destroy(T *p) {
-        std::cout << __PRETTY_FUNCTION__<< std::endl;
+//        std::cout << __PRETTY_FUNCTION__<< std::endl;
         p->~T();
     }
 
-private:
-    size_type m_szLimit;
-    size_type m_szStep;
-    size_type m_szNextStep;
-    pointer m_pnt;
+private:    
 
     PullChunk<value_type> *m_baseChunk;
     PullChunk<value_type> *m_curChunk;
