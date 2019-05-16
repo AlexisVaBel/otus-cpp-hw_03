@@ -12,10 +12,16 @@ int main(int, char *[]) {
 
     uint upper_bound = 5;
 
-//    auto lst = new OtusLinkeList<int, AllocatorPull<OtusListNode<int>,10>>();
-    auto lst = new OtusLinkeList<int>();
+    auto lst = new OtusLinkeList<int, AllocatorPull<int,10>>();
+//    auto lst = new OtusLinkeList<int>();
     lst->append(10);
-    std::cout<< lst->last() << std::endl;
+    lst->append(11);
+    lst->append(12);
+
+
+    for(auto it = lst->begin();it < lst->end(); it = it + sizeof(*it)){
+        std::cout << *it << " ";
+    }
     delete  lst;
 
 //    auto alst =new otus_container::ArrayList<int,AllocatorPull<int,10>>();

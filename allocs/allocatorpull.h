@@ -99,6 +99,10 @@ public:
         p->~T();
     }
 
+    size_type max_size(){
+        m_baseChunk->m_szLimit;
+    }
+
 private:    
 
     PullChunk<value_type> *m_baseChunk;
