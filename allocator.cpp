@@ -1,56 +1,83 @@
 #include <iostream>
-#include <vector>
-#include <map>
 
-#include "container/arraylist.h"
-#include "container/otuslinkedlist.h"
-#include "allocs/allocatorpull.h"
+#include <map>
+#include <container/clist.h>
+
+#include <allocator/allocatorpull.h>
+
+static int const I_ELM_CNT = 9;
+
+// some functional works ))
+template <int ival>
+struct Factorial{
+    static const int ifact = Factorial<ival - 1>::ifact * ival;
+};
+
+template<>
+struct Factorial<0>{
+    static const int ifact = 1;
+};
+
+template<int ival,class T, class ... Args>
+struct Cyclce_Map{
+    static void produceFact(std::map<T,Args ...> &map){
+        map[ival]=Factorial<ival>::ifact;
+        Cyclce_Map<ival-1,T,Args...>::produceFact(map);
+    }
+};
+
+
+template<class T, class ... Args>
+struct Cyclce_Map<0,T,Args ...>{
+    static void produceFact(std::map<T,Args ...> &map){
+        map[0]=Factorial<0>::ifact;
+    }
+};
+// some functional works ))
 
 
 
 int main(int, char *[]) {
+    std::map <int, int> std_alloc_map;
+    std::map <int, int,std::less<int>, AllocatorPull<std::pair<const int, int>,I_ELM_CNT>> cust_alloc_map;
 
-    uint upper_bound = 5;
-
-    auto lst = new OtusLinkeList<int, AllocatorPull<int,10>>();
-//    auto lst = new OtusLinkeList<int>();
-    lst->append(10);
-    lst->append(11);
-    lst->append(12);
+    Cyclce_Map<I_ELM_CNT,int,int>::produceFact(std_alloc_map);
+    Cyclce_Map<I_ELM_CNT,int,int,std::less<int>, AllocatorPull<std::pair<const int, int>,I_ELM_CNT>>::produceFact(cust_alloc_map);
 
 
-    for(auto it = lst->begin();it < lst->end(); it = it + sizeof(*it)){
-        std::cout << *it << " ";
+
+    for(auto k: std_alloc_map){
+        std::cout << k.first << " " << k.second << std::endl;
     }
-    delete  lst;
 
-//    auto alst =new otus_container::ArrayList<int,AllocatorPull<int,10>>();
-//    for (size_t i = 0; i < upper_bound; ++i) {
-//        alst->add(i);
-//    }
-
-//    for (size_t i = 0; i < upper_bound; ++i) {
-//        std::cout<< alst->at(i) << " ";
-//    }
-//    std::cout << std::endl;
-//    delete alst;
-
-//    auto m = std::map<int, int, std::less<int>, AllocatorPull<std::pair<const int, int>,10>>();
-//    auto m = std::map<int, int>{};
+    for(auto k: cust_alloc_map){
+        std::cout << k.first << " " << k.second << std::endl;
+    }
 
 
-//    for (size_t i = 0; i < upper_bound; ++i) {
-//        m[i] = i;
-//    }
-//    std::cout<<"============= get total ============="<< std::endl;
-//    for (size_t i = 0; i < upper_bound; ++i) {
+    CList<int,std::allocator<int>> std_alloc_lst;
+    CList<int,AllocatorPull<int,I_ELM_CNT>> cust_alloc_lst;
+    for(auto i=0; i<= I_ELM_CNT; ++i){
+        std_alloc_lst.push_front(i);
+    }
+    for(auto i=0; i<= I_ELM_CNT; ++i){
+        cust_alloc_lst.push_front(i);
+    }
 
-//        std::cout << m.at(i)<< " ";
-//    }
+    for(auto i=0; i<= I_ELM_CNT; ++i){
+        std::cout << std_alloc_lst.getTop() <<std::endl;
+        std_alloc_lst.pop_front();
+    }
+
+    for(auto i=0; i<= I_ELM_CNT; ++i){
+        std::cout << cust_alloc_lst.getTop() <<std::endl;
+        cust_alloc_lst.pop_front();
+    }
+
 
 
     return 0;
 }
 
 
-//https://medium.com/@vgasparyan1995/how-to-write-an-stl-compatible-container-fc5b994462c6
+
