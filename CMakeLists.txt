@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.5)
 
 project(allocator)
 include_directories(".")
+include_directories("./container")
+include_directories("./allocator")
 add_executable(allocator allocator.cpp)
 
 set_target_properties(allocator PROPERTIES
