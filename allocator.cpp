@@ -36,6 +36,16 @@ struct Cyclce_Map<0,T,Args ...>{
 // some functional works ))
 
 
+// problem in rebind in List, need to fix it
+template <class T, class ... Args>
+void print_lst_value(CList<T,Args ...> lst){
+    auto itBegin = lst.begin();
+    auto itEnd   = lst.end();
+    while(itBegin != itEnd){
+        std::cout <<(*itBegin).value << std::endl;
+        ++itBegin;
+    }
+}
 
 int main(int, char *[]) {
     std::map <int, int> std_alloc_map;
@@ -59,22 +69,21 @@ int main(int, char *[]) {
     CList<int,AllocatorPull<int,I_ELM_CNT>> cust_alloc_lst;
     for(auto i=0; i<= I_ELM_CNT; ++i){
         std_alloc_lst.push_front(i);
-    }
-    for(auto i=0; i<= I_ELM_CNT; ++i){
         cust_alloc_lst.push_front(i);
     }
 
-    for(auto i=0; i<= I_ELM_CNT; ++i){
-        std::cout << std_alloc_lst.getTop() <<std::endl;
-        std_alloc_lst.pop_front();
+
+
+    auto itStdalloc = std_alloc_lst.begin();
+    while(itStdalloc != std_alloc_lst.end()){
+        std::cout <<(*itStdalloc).value << std::endl;
+        ++itStdalloc;
     }
-
-    for(auto i=0; i<= I_ELM_CNT; ++i){
-        std::cout << cust_alloc_lst.getTop() <<std::endl;
-        cust_alloc_lst.pop_front();
+    itStdalloc = cust_alloc_lst.begin();
+    while(itStdalloc != std_alloc_lst.end()){
+        std::cout <<(*itStdalloc).value << std::endl;
+        ++itStdalloc;
     }
-
-
 
     return 0;
 }

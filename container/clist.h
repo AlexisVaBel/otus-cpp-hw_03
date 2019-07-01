@@ -6,6 +6,9 @@
 #include <iostream>
 
 
+
+
+
 template <class T>
 class ListNode{
 public:    
@@ -15,11 +18,40 @@ public:
 };
 
 
+template<class T>
+class ListIterator: public std::iterator<std::input_iterator_tag, ListNode<T>>
+{
+public:
+    ListIterator(ListNode<T>* p):m_p(p){}
+    ListIterator(const ListIterator &it):m_p(it.m_p){};
+
+    bool operator!=(ListIterator const& other) const {
+//        std::cout << __PRETTY_FUNCTION__<< std::endl;
+        return m_p != other.m_p || m_p != nullptr;}
+    bool operator==(ListIterator const& other) const {return m_p == other.m_p;}
+    typename ListIterator::reference operator*() const {return *m_p;}
+    ListIterator& operator++() {
+        if(m_p != nullptr){
+//            std::cout << "MP not null "<< m_p->value << std::endl;
+            m_p = m_p->next;
+        }
+        return *this;
+    }
+private:
+    ListNode<T>* m_p;
+};
+
+
 // container
 template <class T, class Allocator = std::allocator<T> >
 class CList{
 
 public:
+
+    using  iterator             =ListIterator<T>;
+    using  const_iterator       =ListIterator<const T>;
+
+
     using  value_type           = T;
 
     using  reference            = value_type&;
@@ -85,11 +117,20 @@ public:
     }
 //~construcors
 
+    iterator begin(){
+        return iterator(m_headNode);
+    }
+    iterator end(){
+        return iterator(m_curNode->next);
+    }
+
     allocator_type get_allocator() const noexcept{
         return  m_curAlloc;
     }    
 
 // ~access
+
+
 
 // mutators
     void push_front(const T& x){        
@@ -138,15 +179,6 @@ public:
         return m_curNode->value;
     }
 
-private:
-    void addToNext(ListNode<T> *target,ListNode<T>* tmp){
-        if(target->next != nullptr) addToNext(target->next,tmp);
-        else {
-            target->next = tmp;
-            target       = tmp;
-            ++m_size;
-        }
-    }
 
 private:
     rebindeAllocator  m_curAlloc;
