@@ -12,7 +12,7 @@ endif ($ENV{TRAVIS_BUILD_NUMBER})
 
 include_directories(".")
 include_directories("./container")
-include_directories("./allocator")
+include_directories("./alloc")
 add_executable(allocator allocator.cpp)
 
 set_target_properties(allocator PROPERTIES
