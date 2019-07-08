@@ -11,10 +11,16 @@
 
 template <class T>
 class ListNode{
-public:    
+public:
+    ListNode<T>(T arg1):value(arg1),prev(nullptr){
+        std::cout << __PRETTY_FUNCTION__ << std::endl;
+    }
+    ~ListNode(){
+        if(prev != nullptr)
+        delete prev;
+    }
     T value;
-    ListNode *next = nullptr;    
-    ListNode *prev = nullptr;
+    ListNode<T> *prev;
 };
 
 
@@ -26,13 +32,12 @@ public:
     ListIterator(const ListIterator &it):m_p(it.m_p){};
 
     bool operator!=(ListIterator const& other) const {
-//        std::cout << __PRETTY_FUNCTION__<< std::endl;
         return m_p != other.m_p || m_p != nullptr;}
+
     bool operator==(ListIterator const& other) const {return m_p == other.m_p;}
     typename ListIterator::reference operator*() const {return *m_p;}
     ListIterator& operator++() {
         if(m_p != nullptr){
-//            std::cout << "MP not null "<< m_p->value << std::endl;
             m_p = m_p->next;
         }
         return *this;
@@ -48,8 +53,8 @@ class CList{
 
 public:
 
-    using  iterator             =ListIterator<T>;
-    using  const_iterator       =ListIterator<const T>;
+//    using  iterator             =ListIterator<T>;
+//    using  const_iterator       =ListIterator<const T>;
 
 
     using  value_type           = T;
@@ -69,26 +74,26 @@ public:
     explicit    CList(rebindeAllocator alloc = {}):
         m_curAlloc(rebindeAllocator(alloc)),m_size(0),m_capacity(1),m_headNode(nullptr),m_curNode(nullptr)
     {
-
+        std::cout << __PRETTY_FUNCTION__ << std::endl;
     }
 
     explicit    CList(size_type n):
         m_curAlloc(rebindeAllocator(std::allocator<T>())),m_size(0),m_capacity(1),m_headNode(nullptr),m_curNode(nullptr)
 
     {        
-
+        std::cout << __PRETTY_FUNCTION__ << std::endl;
     }
 
     CList(size_type n, const T& value,allocator_type alloc = {}):
         m_curAlloc(rebindeAllocator(alloc)),m_size(0),m_capacity(1),m_headNode(nullptr),m_curNode(nullptr)
     {
-
+        std::cout << __PRETTY_FUNCTION__ << std::endl;
     }
 
     //copy
     CList(CList &lst)
     {
-        m_curAlloc = lst.get_allocator();
+//        m_curAlloc = lst.get_allocator();
         m_headNode = lst.m_headNode;
         m_size     = lst.m_size;
         m_capacity = lst.m_capacity;
@@ -104,73 +109,57 @@ public:
 
     ~CList()
     {        
-        auto tmp = m_headNode;
+        auto tmp = m_curNode;
         while(tmp != nullptr){
-            auto next = tmp->next;
+            auto toDelete = tmp;
+            std::cout << __PRETTY_FUNCTION__ <<std::endl;
+            if(tmp->prev != nullptr)
+                tmp = tmp->prev;
             // if something goes wrong we got undeallocate space (
-            m_curAlloc.destroy(tmp);
-            m_curAlloc.deallocate(tmp,1);            
+//            m_curAlloc.destroy(toDelete);
+//            m_curAlloc.deallocate(toDelete,1);
             // if something goes wrong we got undeallocate space (
-            tmp = next;
+
         }
+
 
     }
 //~construcors
 
-    iterator begin(){
-        return iterator(m_headNode);
-    }
-    iterator end(){
-        return iterator(m_curNode->next);
-    }
+//    iterator begin(){
+//        return iterator(m_headNode);
+//    }
+//    iterator end(){
+//        return iterator(m_curNode->next);
+//    }
 
-    allocator_type get_allocator() const noexcept{
-        return  m_curAlloc;
-    }    
+//    allocator_type get_allocator() const noexcept{
+//        return  m_curAlloc;
+//    }
 
 // ~access
 
 
 
 // mutators
-    void push_front(const T& x){        
-        auto tmp = m_curAlloc.allocate(1);
-        m_curAlloc.construct(tmp,ListNode<T>{x,nullptr});
-        if(m_headNode == nullptr){
-            m_headNode = tmp;
-            m_curNode  = m_headNode;
-       }else {
-            m_curNode->next = tmp;
-            auto       tmp2 = m_curNode;
-            m_curNode       = tmp;
-            m_curNode->prev = tmp2;
-        };
-        ++m_size;
+    void push_front(T& x){
+        auto tmp = m_curAlloc.allocate(1);        
+        m_curAlloc.construct(tmp,ListNode<T>{x});
+        if(m_curNode == nullptr){
+            m_curNode= tmp;
+            m_curNode->prev = nullptr;
+            m_headNode = m_curNode;
+        }else {
+            auto tmpNode = m_curNode;
+            m_curNode = tmp;
+            m_curNode->prev = tmpNode;
+        }
+
     };
 
-    void push_front(T&& x){        
-        auto tmp = m_curAlloc.allocate(1);
-        m_curAlloc.construct(tmp,ListNode<T>{x,nullptr});
-        if(m_headNode == nullptr){
-            m_headNode = tmp;
-            m_curNode  = m_headNode;
-        }else {
-            m_curNode->next = tmp;
-            auto       tmp2 = m_curNode;
-            m_curNode       = tmp;
-            m_curNode->prev = tmp2;
-        };
-        ++m_size;
-    };
 
     void pop_front(){
-        if(m_curNode != nullptr && m_curNode->prev != nullptr){
-            auto prev = m_curNode->prev;
-            prev->next = nullptr;
-            m_curAlloc.destroy(m_curNode);
-            m_curAlloc.deallocate(m_curNode,1);
-            m_curNode = prev;
-        };
+
 
     }
 

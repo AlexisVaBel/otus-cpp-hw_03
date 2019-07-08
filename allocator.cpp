@@ -43,12 +43,13 @@ struct Cyclce_Map<0,T,Args ...>{
 // problem in rebind in List, need to fix it
 template <class T, class ... Args>
 void print_lst_value(CList<T,Args ...> lst){
-    auto itBegin = lst.begin();
-    auto itEnd   = lst.end();
-    while(itBegin != itEnd){
-        std::cout <<(*itBegin).value << std::endl;
-        ++itBegin;
-    }
+//    auto l1 = std::forward<CList<T,Args ...>>(lst);
+//    auto itBegin = lst.begin();
+//    auto itEnd   = lst.end();
+//    while(itBegin != itEnd){
+//        std::cout <<(*itBegin).value << std::endl;
+//        ++itBegin;
+//    }
 }
 
 int main(int, char *[]) {
@@ -71,13 +72,14 @@ int main(int, char *[]) {
 
 
     CList<int,std::allocator<int>> std_alloc_lst;
-    CList<int,AllocatorPull<int,I_ELM_CNT>> cust_alloc_lst;
-    for(auto i=0; i<= I_ELM_CNT; ++i){
+    CList<int,AllocatorPull<int,I_ELM_ALLOC>> cust_alloc_lst;
+    for(auto i=0; i<= 0; ++i){
         std_alloc_lst.push_front(i);
-        cust_alloc_lst.push_front(i);
+//        cust_alloc_lst.push_front(i);
     }
 
-
+    print_lst_value(std_alloc_lst);
+//    print_lst_value(cust_alloc_lst);
 
 //    auto itStdalloc = std_alloc_lst.begin();
 //    while(itStdalloc != std_alloc_lst.end()){
