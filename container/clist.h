@@ -12,15 +12,13 @@
 template <class T>
 class ListNode{
 public:
-    ListNode<T>(T arg1):value(arg1),prev(nullptr){
+    ListNode<T>(T arg1):value(arg1),next(nullptr){
         std::cout << __PRETTY_FUNCTION__ << std::endl;
     }
     ~ListNode(){
-        if(prev != nullptr)
-        delete prev;
     }
     T value;
-    ListNode<T> *prev;
+    ListNode<T> *next;
 };
 
 
@@ -30,12 +28,18 @@ class ListIterator: public std::iterator<std::input_iterator_tag, ListNode<T>>
 public:
     ListIterator(ListNode<T>* p):m_p(p){}
     ListIterator(const ListIterator &it):m_p(it.m_p){};
+    ~ListIterator(){
+
+    }
 
     bool operator!=(ListIterator const& other) const {
-        return m_p != other.m_p || m_p != nullptr;}
+        std::cout << __PRETTY_FUNCTION__ <<std::endl;
+        return (m_p != nullptr && m_p != other.m_p);}
 
     bool operator==(ListIterator const& other) const {return m_p == other.m_p;}
-    typename ListIterator::reference operator*() const {return *m_p;}
+    typename ListIterator::reference operator*() const {
+        return *m_p;
+    }
     ListIterator& operator++() {
         if(m_p != nullptr){
             m_p = m_p->next;
@@ -53,8 +57,8 @@ class CList{
 
 public:
 
-//    using  iterator             =ListIterator<T>;
-//    using  const_iterator       =ListIterator<const T>;
+    using  iterator             =ListIterator<T>;
+    using  const_iterator       =ListIterator<const T>;
 
 
     using  value_type           = T;
@@ -108,59 +112,64 @@ public:
     }
 
     ~CList()
-    {        
-        auto tmp = m_curNode;
+    {
+        auto tmp = m_headNode;
         while(tmp != nullptr){
             auto toDelete = tmp;
-            std::cout << __PRETTY_FUNCTION__ <<std::endl;
-            if(tmp->prev != nullptr)
-                tmp = tmp->prev;
-            // if something goes wrong we got undeallocate space (
-//            m_curAlloc.destroy(toDelete);
-//            m_curAlloc.deallocate(toDelete,1);
-            // if something goes wrong we got undeallocate space (
+            tmp = tmp->next;
+            m_curAlloc.deallocate(toDelete,1);
 
         }
-
-
     }
+
 //~construcors
 
-//    iterator begin(){
-//        return iterator(m_headNode);
-//    }
-//    iterator end(){
-//        return iterator(m_curNode->next);
-//    }
+    iterator begin(){
+        return iterator(m_headNode);
+    }
+    iterator end(){
+        return iterator(m_curNode->next);
+    }
 
-//    allocator_type get_allocator() const noexcept{
-//        return  m_curAlloc;
-//    }
+    allocator_type get_allocator() const noexcept{
+        return  m_curAlloc;
+    }
 
 // ~access
 
 
 
 // mutators
-    void push_front(T& x){
+    void push_front(T x){
         auto tmp = m_curAlloc.allocate(1);        
         m_curAlloc.construct(tmp,ListNode<T>{x});
         if(m_curNode == nullptr){
             m_curNode= tmp;
-            m_curNode->prev = nullptr;
-            m_headNode = m_curNode;
+            m_curNode->next = nullptr;
+            m_headNode = m_curNode;            
         }else {
             auto tmpNode = m_curNode;
             m_curNode = tmp;
-            m_curNode->prev = tmpNode;
-        }
-
+            tmpNode->next = m_curNode;
+        }        
     };
 
 
     void pop_front(){
-
-
+        if(m_curNode == nullptr)return;
+        auto tmp    = m_headNode;
+        auto preTmp = m_headNode;
+        while (tmp->next != nullptr) {
+            preTmp = tmp;
+            tmp = tmp->next;
+        };
+        m_curNode = preTmp;
+        m_curNode->next = nullptr;
+        if(m_curNode == m_headNode && m_curNode == preTmp) {
+            m_headNode = nullptr;
+            m_curNode  = nullptr;
+        }
+        m_curAlloc.deallocate(tmp,1);
     }
 
 //~ mutators
