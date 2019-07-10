@@ -12,8 +12,7 @@
 template <class T>
 class ListNode{
 public:
-    ListNode<T>(T arg1):value(arg1),next(nullptr){
-        std::cout << __PRETTY_FUNCTION__ << std::endl;
+    ListNode<T>(T arg1):value(arg1),next(nullptr){        
     }
     ~ListNode(){
     }
@@ -26,27 +25,31 @@ template<class T>
 class ListIterator: public std::iterator<std::input_iterator_tag, ListNode<T>>
 {
 public:
-    ListIterator(ListNode<T>* p):m_p(p){}
-    ListIterator(const ListIterator &it):m_p(it.m_p){};
+    ListIterator(ListNode<T>* p,int iCnt):m_p(p),m_iCnt(iCnt){}
+    ListIterator(const ListIterator &it):m_p(it.m_p),m_iCnt(it.m_iCnt){
+        std::cout << __PRETTY_FUNCTION__ <<std::endl;
+    };
     ~ListIterator(){
 
     }
 
     bool operator!=(ListIterator const& other) const {
-        std::cout << __PRETTY_FUNCTION__ <<std::endl;
-        return (m_p != nullptr && m_p != other.m_p);}
+//        std::cout << __PRETTY_FUNCTION__ <<std::endl;
+        return (m_p != other.m_p && (m_iCnt != other.m_iCnt));}
 
     bool operator==(ListIterator const& other) const {return m_p == other.m_p;}
     typename ListIterator::reference operator*() const {
         return *m_p;
     }
     ListIterator& operator++() {
-        if(m_p != nullptr){
+        if(m_p != nullptr && m_p->next != nullptr){
             m_p = m_p->next;
         }
+        m_iCnt++;
         return *this;
     }
 private:
+    int          m_iCnt;
     ListNode<T>* m_p;
 };
 
@@ -78,14 +81,14 @@ public:
     explicit    CList(rebindeAllocator alloc = {}):
         m_curAlloc(rebindeAllocator(alloc)),m_size(0),m_capacity(1),m_headNode(nullptr),m_curNode(nullptr)
     {
-        std::cout << __PRETTY_FUNCTION__ << std::endl;
+//        std::cout << __PRETTY_FUNCTION__ << std::endl;
     }
 
     explicit    CList(size_type n):
         m_curAlloc(rebindeAllocator(std::allocator<T>())),m_size(0),m_capacity(1),m_headNode(nullptr),m_curNode(nullptr)
 
     {        
-        std::cout << __PRETTY_FUNCTION__ << std::endl;
+//        std::cout << __PRETTY_FUNCTION__ << std::endl;
     }
 
     CList(size_type n, const T& value,allocator_type alloc = {}):
@@ -97,7 +100,7 @@ public:
     //copy
     CList(CList &lst)
     {
-//        m_curAlloc = lst.get_allocator();
+        m_curAlloc = lst.m_curAlloc;
         m_headNode = lst.m_headNode;
         m_size     = lst.m_size;
         m_capacity = lst.m_capacity;
@@ -125,10 +128,10 @@ public:
 //~construcors
 
     iterator begin(){
-        return iterator(m_headNode);
+        return iterator(m_headNode,0);
     }
     iterator end(){
-        return iterator(m_curNode->next);
+        return iterator(m_curNode,m_size);
     }
 
     allocator_type get_allocator() const noexcept{
@@ -143,12 +146,14 @@ public:
     void push_front(T x){
         auto tmp = m_curAlloc.allocate(1);        
         m_curAlloc.construct(tmp,ListNode<T>{x});
+        m_size++;
         if(m_curNode == nullptr){
             m_curNode= tmp;
             m_curNode->next = nullptr;
             m_headNode = m_curNode;            
         }else {
             auto tmpNode = m_curNode;
+            m_curNode->next = nullptr;
             m_curNode = tmp;
             tmpNode->next = m_curNode;
         }        
@@ -157,6 +162,7 @@ public:
 
     void pop_front(){
         if(m_curNode == nullptr)return;
+        m_size--;
         auto tmp    = m_headNode;
         auto preTmp = m_headNode;
         while (tmp->next != nullptr) {
@@ -176,7 +182,6 @@ public:
     T  getTop(){
         return m_curNode->value;
     }
-
 
 private:
     rebindeAllocator  m_curAlloc;
