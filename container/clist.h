@@ -10,7 +10,7 @@ template <class T>
 class ListNode{
 public:
     ListNode<T>(T arg1):value(arg1),next(nullptr),prev(nullptr){
-//        std::cout << __PRETTY_FUNCTION__  << std::endl;
+
     }
 
     ListNode<T>(ListNode<T> &&arg1):value(arg1.value),next(arg1.next),prev(arg1.prev){
@@ -18,7 +18,7 @@ public:
     }
 
     ~ListNode(){
-//        std::cout << __PRETTY_FUNCTION__  << std::endl;
+
     }
 
     T value;

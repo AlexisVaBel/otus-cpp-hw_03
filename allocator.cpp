@@ -3,6 +3,7 @@
 #include <vector>
 #include <map>
 #include <container/clist.h>
+#include <container/listv2.h>
 
 #include <alloc/allocatorpull.h>
 
@@ -40,66 +41,44 @@ struct Cyclce_Map<0,T,Args ...>{
 // some functional works ))
 
 
-// problem in rebind in List, need to fix it
+
 template <class T, class ... Args>
-void it_print_lst_value(CList<T,Args ...> &lst){
+void it_print_lst_value(ListV2<T,Args ...> &lst){
     auto itBegin = lst.begin();
     auto itEnd   = lst.end();
     while(itBegin != itEnd){
-        std::cout <<(*itBegin).value << std::endl;
+        std::cout <<(*itBegin) << std::endl;
         ++itBegin;
     }
 }
 
-template <class T, class ... Args>
-void top_print_lst_value(CList<T,Args ...> &lst){
-
-    while(lst.getSize() != 0){
-        auto top = lst.getTop();
-        std::cout << top << std::endl;
-        lst.pop_front();
-    }
-}
 
 int main(int, char *[]) {
-//    std::map <int, int> std_alloc_map;
-//    std::map <int, int,std::less<int>, AllocatorPull<std::pair<const int, int>,I_ELM_ALLOC>> cust_alloc_map;
+    // maps
+    std::map <int, int> std_alloc_map;
+    std::map <int, int,std::less<int>, AllocatorPull<std::pair<const int, int>,I_ELM_ALLOC>> cust_alloc_map;
 
-//    Cyclce_Map<I_ELM_CNT,int,int>::produceFact(std_alloc_map);
-//    Cyclce_Map<I_ELM_CNT,int,int,std::less<int>, AllocatorPull<std::pair<const int, int>,I_ELM_ALLOC>>::produceFact(cust_alloc_map);
+    Cyclce_Map<I_ELM_CNT,int,int>::produceFact(std_alloc_map);
+    Cyclce_Map<I_ELM_CNT,int,int,std::less<int>, AllocatorPull<std::pair<const int, int>,I_ELM_ALLOC>>::produceFact(cust_alloc_map);
 
-
-
-//    for(auto k: std_alloc_map){
-//        std::cout << k.first << " " << k.second << std::endl;
-//    }
-
-//    for(auto k: cust_alloc_map){
-//        std::cout << k.first << " " << k.second << std::endl;
-//    }
-
-
-
-    CList<int,std::allocator<int>> std_alloc_lst;
-    CList<int,AllocatorPull<int,I_ELM_ALLOC>> cust_alloc_lst;
-    for(int i=0; i<= I_ELM_CNT; ++i){
-        std_alloc_lst.push_front((i));
-        cust_alloc_lst.push_front(i);
+    for(auto k: std_alloc_map){
+        std::cout << k.first << " " << k.second << std::endl;
     }
 
-//    auto itBegin = std_alloc_lst.begin();
-//    auto itEnd   = std_alloc_lst.end();
-//    std::cout <<(*itBegin).value << std::endl;
-//    std::cout <<(*itEnd).value << std::endl;
-//    if( itBegin == itEnd )std::cout << "equals " << std::endl;
-//    ++itBegin;
-//    top_print_lst_value(std_alloc_lst);
-//    top_print_lst_value(cust_alloc_lst);
+    for(auto k: cust_alloc_map){
+        std::cout << k.first << " " << k.second << std::endl;
+    }
+
+    // lists
+    ListV2<int> std_alloc_lst;
+    ListV2<int,AllocatorPull<int,I_ELM_ALLOC>> cust_alloc_lst;
+    for(int i=0; i<= I_ELM_CNT; ++i){
+        std_alloc_lst.push_back(i);
+        cust_alloc_lst.push_back(i);
+    }
+
     it_print_lst_value(std_alloc_lst);
     it_print_lst_value(cust_alloc_lst);
-//    print_lst_value(std_alloc_lst);
-//    print_lst_value(cust_alloc_lst);
-
 
     return 0;
 }
