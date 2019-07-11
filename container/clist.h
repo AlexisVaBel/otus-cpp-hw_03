@@ -6,18 +6,24 @@
 #include <iostream>
 
 
-
-
-
 template <class T>
 class ListNode{
 public:
-    ListNode<T>(T arg1):value(arg1),next(nullptr){        
+    ListNode<T>(T arg1):value(arg1),next(nullptr),prev(nullptr){
+//        std::cout << __PRETTY_FUNCTION__  << std::endl;
     }
+
+    ListNode<T>(ListNode<T> &&arg1):value(arg1.value),next(arg1.next),prev(arg1.prev){
+        std::cout << __PRETTY_FUNCTION__  << std::endl;
+    }
+
     ~ListNode(){
+//        std::cout << __PRETTY_FUNCTION__  << std::endl;
     }
+
     T value;
     ListNode<T> *next;
+    ListNode<T> *prev;
 };
 
 
@@ -25,7 +31,10 @@ template<class T>
 class ListIterator: public std::iterator<std::input_iterator_tag, ListNode<T>>
 {
 public:
-    ListIterator(ListNode<T>* p,int iCnt):m_p(p),m_iCnt(iCnt){}
+    ListIterator(ListNode<T>* p,int iCnt):m_p(p),m_iCnt(iCnt){
+        std::cout << __PRETTY_FUNCTION__ << m_p ->value<<std::endl;
+        std::cout << __PRETTY_FUNCTION__ << m_p ->prev<<std::endl;
+    }
     ListIterator(const ListIterator &it):m_p(it.m_p),m_iCnt(it.m_iCnt){
         std::cout << __PRETTY_FUNCTION__ <<std::endl;
     };
@@ -35,14 +44,16 @@ public:
 
     bool operator!=(ListIterator const& other) const {
 //        std::cout << __PRETTY_FUNCTION__ <<std::endl;
-        return (m_p != other.m_p && (m_iCnt != other.m_iCnt));}
+        return ((m_iCnt != other.m_iCnt));}
 
-    bool operator==(ListIterator const& other) const {return m_p == other.m_p;}
+    bool operator==(ListIterator const& other) const {return (m_iCnt == other.m_iCnt);}
+
     typename ListIterator::reference operator*() const {
         return *m_p;
     }
     ListIterator& operator++() {
         if(m_p != nullptr && m_p->next != nullptr){
+            std::cout << __PRETTY_FUNCTION__ << std::endl;
             m_p = m_p->next;
         }
         m_iCnt++;
@@ -79,20 +90,20 @@ public:
 
 // construcors
     explicit    CList(rebindeAllocator alloc = {}):
-        m_curAlloc(rebindeAllocator(alloc)),m_size(0),m_capacity(1),m_headNode(nullptr),m_curNode(nullptr)
+        m_curAlloc(rebindeAllocator(alloc)),m_size(0),m_capacity(1),m_curNode(nullptr)
     {
 //        std::cout << __PRETTY_FUNCTION__ << std::endl;
     }
 
     explicit    CList(size_type n):
-        m_curAlloc(rebindeAllocator(std::allocator<T>())),m_size(0),m_capacity(1),m_headNode(nullptr),m_curNode(nullptr)
+        m_curAlloc(rebindeAllocator(std::allocator<T>())),m_size(0),m_capacity(1),m_curNode(nullptr)
 
     {        
 //        std::cout << __PRETTY_FUNCTION__ << std::endl;
     }
 
     CList(size_type n, const T& value,allocator_type alloc = {}):
-        m_curAlloc(rebindeAllocator(alloc)),m_size(0),m_capacity(1),m_headNode(nullptr),m_curNode(nullptr)
+        m_curAlloc(rebindeAllocator(alloc)),m_size(0),m_capacity(1),m_curNode(nullptr)
     {
         std::cout << __PRETTY_FUNCTION__ << std::endl;
     }
@@ -101,7 +112,7 @@ public:
     CList(CList &lst)
     {
         m_curAlloc = lst.m_curAlloc;
-        m_headNode = lst.m_headNode;
+        m_curNode = lst.m_curNode;
         m_size     = lst.m_size;
         m_capacity = lst.m_capacity;
     }
@@ -109,29 +120,45 @@ public:
     CList(CList &&lst)
     {
         std::swap(m_curAlloc,lst.m_curAlloc);
-        std::swap(m_headNode,lst.m_headNode);
+        std::swap(m_curNode,lst.m_curNode);
         std::swap(m_size,lst.m_size);
         std::swap(m_capacity,lst.m_capacity);
     }
 
     ~CList()
     {
-        auto tmp = m_headNode;
-        while(tmp != nullptr){
-            auto toDelete = tmp;
-            tmp = tmp->next;
-            m_curAlloc.deallocate(toDelete,1);
-
+        if(m_curNode != nullptr){
+            auto tmp = m_curNode;
+            while(tmp != nullptr){
+                auto toDelete = tmp;
+                tmp = tmp->prev;
+                m_curAlloc.deallocate(toDelete,1);
+            }
         }
     }
 
 //~construcors
 
     iterator begin(){
-        return iterator(m_headNode,0);
+        auto tmpNode  = m_curNode;
+        if(m_curNode == nullptr)return iterator(tmpNode,0);
+
+        tmpNode->prev = m_curNode->prev;
+        tmpNode->next = m_curNode->next;
+        while(tmpNode != nullptr && tmpNode->prev != nullptr){
+
+
+            if(tmpNode->prev != nullptr){
+                std::cout << tmpNode << " " <<tmpNode->value<< std::endl;
+                auto tmp = tmpNode;
+                tmpNode  = tmpNode->prev;
+
+            }
+        }
+        return iterator(tmpNode,0);
     }
     iterator end(){
-        return iterator(m_curNode,m_size);
+        return iterator(m_curNode,m_size+1);
     }
 
     allocator_type get_allocator() const noexcept{
@@ -144,56 +171,47 @@ public:
 
 // mutators
     void push_front(T x){
-        auto tmp = m_curAlloc.allocate(1);        
-        m_curAlloc.construct(tmp,ListNode<T>{x});
+        ListNode<T> *tmpNode = nullptr;
+        if(m_curNode != nullptr){
+            tmpNode = m_curNode;            
+        };
+
+        m_curNode = m_curAlloc.allocate(1);
+        m_curAlloc.construct(m_curNode,ListNode<T>(x));
+
+        m_curNode->prev = tmpNode;
+        m_curNode->next = nullptr;
+
         m_size++;
-        if(m_curNode == nullptr){
-            m_curNode= tmp;
-            m_curNode->next = nullptr;
-            m_headNode = m_curNode;            
-        }else {
-            auto tmpNode = m_curNode;
-            m_curNode->next = nullptr;
-            m_curNode = tmp;
-            tmpNode->next = m_curNode;
-        }        
-    };
+    }
 
 
     void pop_front(){
         if(m_curNode == nullptr)return;
+        auto nodeToRelease = m_curNode;
+        m_curNode = m_curNode->prev;
+        if(m_curNode != nullptr) m_curNode->next = nullptr;
+        m_curAlloc.destroy(nodeToRelease);
+        m_curAlloc.deallocate(nodeToRelease,1);
         m_size--;
-        auto tmp    = m_headNode;
-        auto preTmp = m_headNode;
-        while (tmp->next != nullptr) {
-            preTmp = tmp;
-            tmp = tmp->next;
-        };
-        m_curNode = preTmp;
-        m_curNode->next = nullptr;
-        if(m_curNode == m_headNode && m_curNode == preTmp) {
-            m_headNode = nullptr;
-            m_curNode  = nullptr;
-        }
-        m_curAlloc.deallocate(tmp,1);
     }
 
 //~ mutators
     T  getTop(){
+//        std::cout << __PRETTY_FUNCTION__ << m_curNode <<" of size "<< m_size << std::endl;
         return m_curNode->value;
+    }
+
+    int getSize(){
+        return m_size;
     }
 
 private:
     rebindeAllocator  m_curAlloc;
-
-// don`t know for what to use size and capacity....
-    size_type         m_size;
+    int               m_size;
     size_type         m_capacity;
-//~ don`t know for what to use size and capacity....
 
-
-    ListNode<T>       *m_headNode;
-    ListNode<T>       *m_curNode;
+    ListNode<T>       *m_curNode;    
 };
 //~ container
 #endif // CLIST_H

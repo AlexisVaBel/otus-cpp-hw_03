@@ -42,12 +42,22 @@ struct Cyclce_Map<0,T,Args ...>{
 
 // problem in rebind in List, need to fix it
 template <class T, class ... Args>
-void print_lst_value(CList<T,Args ...> lst){
+void it_print_lst_value(CList<T,Args ...> &lst){
     auto itBegin = lst.begin();
     auto itEnd   = lst.end();
     while(itBegin != itEnd){
         std::cout <<(*itBegin).value << std::endl;
         ++itBegin;
+    }
+}
+
+template <class T, class ... Args>
+void top_print_lst_value(CList<T,Args ...> &lst){
+
+    while(lst.getSize() != 0){
+        auto top = lst.getTop();
+        std::cout << top << std::endl;
+        lst.pop_front();
     }
 }
 
@@ -81,18 +91,14 @@ int main(int, char *[]) {
 //    auto itEnd   = std_alloc_lst.end();
 //    std::cout <<(*itBegin).value << std::endl;
 //    std::cout <<(*itEnd).value << std::endl;
-//    ++itEnd;
-//    std::cout <<(*itEnd).value << std::endl;
 //    if( itBegin == itEnd )std::cout << "equals " << std::endl;
-//    if( itBegin != itEnd )std::cout << "not equals " << std::endl;
-//    itBegin = cust_alloc_lst.begin();
-//    itEnd   = cust_alloc_lst.end();
-//    std::cout <<(*itBegin).value << std::endl;
-//    std::cout <<(*itEnd).value << std::endl;
-//    ++itEnd;
-//    std::cout <<(*itEnd).value << std::endl;
-    print_lst_value(std_alloc_lst);
-    print_lst_value(cust_alloc_lst);
+//    ++itBegin;
+//    top_print_lst_value(std_alloc_lst);
+//    top_print_lst_value(cust_alloc_lst);
+    it_print_lst_value(std_alloc_lst);
+    it_print_lst_value(cust_alloc_lst);
+//    print_lst_value(std_alloc_lst);
+//    print_lst_value(cust_alloc_lst);
 
 
     return 0;
