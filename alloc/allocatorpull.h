@@ -15,7 +15,7 @@ public:
     using size_type           = std::size_t;
 public:
 
-    AllocatorPull():m_szLimit(0),m_szCurStep(0),m_pnt(nullptr),m_pntCur(nullptr){}
+    AllocatorPull():m_pnt(nullptr),m_pntCur(nullptr){}
     ~AllocatorPull(){
         if(m_pnt != nullptr) free(m_pnt);
     }
@@ -40,8 +40,6 @@ public:
     void deallocate(T *p, std::size_t n)
     {
 
-
-//        std::cout << __PRETTY_FUNCTION__ << " "<<m_szCurStep<<std::endl;
         if(m_pntCur == m_pnt) {
             free(m_pnt);
             m_pnt = nullptr;
@@ -62,15 +60,9 @@ public:
         p->~T();
     }
 
-    size_type max_size(){
-        return m_szLimit;
-    }
 
-private:    
 
-    size_type m_szLimit;
-
-    size_type m_szCurStep;
+private:        
 
     pointer m_pnt;
     pointer m_pntCur;

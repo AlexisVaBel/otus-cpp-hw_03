@@ -2,15 +2,13 @@
 
 #include <vector>
 #include <map>
-#include <container/clist.h>
 #include <container/listv2.h>
-
 #include <alloc/allocatorpull.h>
 
-static int const I_ELM_CNT = 9;
+
 static int const I_ELM_ALLOC = 10;
 
-// some functional works ))
+//  some functional works ))
 template <int ival>
 struct Factorial{
     static const int ifact = Factorial<ival - 1>::ifact * ival;
@@ -38,7 +36,7 @@ struct Cyclce_Map<0,T,Args ...>{
         map[0]=Factorial<0>::ifact;
     }
 };
-// some functional works ))
+// ~some functional works ))
 
 
 
@@ -52,14 +50,15 @@ void it_print_lst_value(ListV2<T,Args ...> &lst){
     }
 }
 
+    using  cust_allocated_map = AllocatorPull<std::pair<const int, int>,I_ELM_ALLOC>;
 
 int main(int, char *[]) {
     // maps
     std::map <int, int> std_alloc_map;
-    std::map <int, int,std::less<int>, AllocatorPull<std::pair<const int, int>,I_ELM_ALLOC>> cust_alloc_map;
+    std::map <int, int,std::less<int>, cust_allocated_map> cust_alloc_map;
 
-    Cyclce_Map<I_ELM_CNT,int,int>::produceFact(std_alloc_map);
-    Cyclce_Map<I_ELM_CNT,int,int,std::less<int>, AllocatorPull<std::pair<const int, int>,I_ELM_ALLOC>>::produceFact(cust_alloc_map);
+    Cyclce_Map<I_ELM_ALLOC-1,int,int>::produceFact(std_alloc_map);
+    Cyclce_Map<I_ELM_ALLOC-1,int,int,std::less<int>, cust_allocated_map>::produceFact(cust_alloc_map);
 
     for(auto k: std_alloc_map){
         std::cout << k.first << " " << k.second << std::endl;
@@ -72,13 +71,25 @@ int main(int, char *[]) {
     // lists
     ListV2<int> std_alloc_lst;
     ListV2<int,AllocatorPull<int,I_ELM_ALLOC>> cust_alloc_lst;
-    for(int i=0; i<= I_ELM_CNT; ++i){
+    for(int i=0; i<= I_ELM_ALLOC-1; ++i){
         std_alloc_lst.push_back(i);
         cust_alloc_lst.push_back(i);
     }
 
     it_print_lst_value(std_alloc_lst);
     it_print_lst_value(cust_alloc_lst);
+
+
+//    ListV2<std::string> leaked_lst;
+
+
+//    leaked_lst.push_back(std::string(1024, 'x'));
+//    leaked_lst.push_back(std::string(1024, 'y'));
+//    leaked_lst.push_back(std::string(1024, 'z'));
+//    leaked_lst.push_back(std::string(1024, 'l'));
+
+//    ListV2<std::string> copy_lst = std::move(leaked_lst);
+//    it_print_lst_value(copy_lst);
 
     return 0;
 }

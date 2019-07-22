@@ -47,16 +47,42 @@ public:
 
 public:
     explicit ListV2(rebindeAllocator alloc = {}):m_curAlloc(rebindeAllocator(alloc)), head(nullptr), tail(nullptr){}
-    explicit ListV2(size_type n, const T& value,allocator_type alloc = {}):
-        m_curAlloc(rebindeAllocator(alloc)), head(nullptr), tail(nullptr){}
+
+
+    // copy constructor
+    ListV2(const ListV2 &that):m_curAlloc(rebindeAllocator(that.m_curAlloc)){
+        head =  m_curAlloc.allocate(1);
+        m_curAlloc.construct(head,ListV2Node<T>(that.head->elem,nullptr));
+        tail = head;
+        auto tmp = that.head->next;
+        while(tmp != nullptr){
+            auto newNode = m_curAlloc.allocate(1);
+            m_curAlloc.construct(newNode,ListV2Node<T>(tmp->elem,nullptr));
+            tail->next = newNode;
+            tail = newNode;
+            tmp = tmp->next;
+        };
+    }
+
+    // move constructor
+    ListV2(ListV2 &&that):m_curAlloc(rebindeAllocator(that.m_curAlloc)){
+        head = that.head;
+        tail = that.tail;
+        // no head, no tail - all between can be used without nullptring that... elemnts
+        that.head = nullptr;
+        that.tail = nullptr;
+    }
+
 
     ~ListV2(){
         auto toDelete = head;
         while (toDelete != nullptr) {
             head = head->next;
+            m_curAlloc.destroy(toDelete);
             m_curAlloc.deallocate(toDelete,1);
             toDelete = head;
         }
+
     }
 
     iterator begin() {return ListV2_iterator<T>(head);}
@@ -65,15 +91,16 @@ public:
 
     bool empty() const {return head == nullptr;}
 
-    void push_back(const T& elem){
-       auto newNode = m_curAlloc.allocate(1);
-       m_curAlloc.construct(newNode,ListV2Node<T>(elem,nullptr));
-       if(head == nullptr){
-           head = newNode;
-       }else{
-           tail->next = newNode;
-       }
-       tail = newNode;
+
+    void push_back(T& elem){
+        auto newNode = m_curAlloc.allocate(1);
+        m_curAlloc.construct(newNode,ListV2Node<T>(elem,nullptr));
+        if(head == nullptr){
+            head = newNode;
+        }else{
+            tail->next = newNode;
+        }
+        tail = newNode;
     }
 
 
