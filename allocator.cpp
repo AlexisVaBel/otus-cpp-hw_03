@@ -80,17 +80,19 @@ int main(int, char *[]) {
     it_print_lst_value(cust_alloc_lst);
 
 
+    // some test cases: leaked, copy, move
 //    ListV2<std::string> leaked_lst;
-
-
-//    leaked_lst.push_back(std::string(1024, 'x'));
+//    auto tmp = std::string(1024, 'x');
+//    auto  const tmp2 = std::string(1024, 'o');
+//    leaked_lst.push_back(tmp);
+//    leaked_lst.push_back(tmp2);
 //    leaked_lst.push_back(std::string(1024, 'y'));
 //    leaked_lst.push_back(std::string(1024, 'z'));
 //    leaked_lst.push_back(std::string(1024, 'l'));
 
 //    ListV2<std::string> copy_lst = std::move(leaked_lst);
 //    it_print_lst_value(copy_lst);
-
+    //~ some test cases: leaked, copy, move
     return 0;
 }
 

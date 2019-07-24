@@ -91,13 +91,14 @@ public:
 
     bool empty() const {return head == nullptr;}
 
-
-    void push_back(T& elem){
+    template <typename U>
+    void push_back(U&& elem){
         auto newNode = m_curAlloc.allocate(1);
-        m_curAlloc.construct(newNode,ListV2Node<T>(elem,nullptr));
+        m_curAlloc.construct(newNode,ListV2Node<T>((std::forward<U>(elem)),nullptr));
         if(head == nullptr){
             head = newNode;
-        }else{
+        }
+        else{
             tail->next = newNode;
         }
         tail = newNode;

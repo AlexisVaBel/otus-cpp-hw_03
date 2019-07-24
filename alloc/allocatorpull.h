@@ -2,7 +2,7 @@
 #define ALLOCATORPULL_H
 
 #include <memory>
-#include <iostream>
+//#include <iostream>
 
 template <typename T, std::size_t CNT_RESERVE>
 class AllocatorPull{

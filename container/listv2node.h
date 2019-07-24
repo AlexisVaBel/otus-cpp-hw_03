@@ -9,17 +9,12 @@ template <typename T> class ListV2_iterator;
 
 template <typename T>
 class ListV2Node{
-
-
 public:
     friend class ListV2_iterator<T>;
 
-    ListV2Node(const T& t, ListV2Node<T> *next): elem(t), next(next) {
-
-    }
-
-    ListV2Node(const T&& t, ListV2Node<T> *next): elem(t), next(next) {
-
+    template <typename U>
+    ListV2Node(U&& u, ListV2Node<T> *nxt):elem(std::forward<U>(u)),next(nxt){
+//        std::cout << __PRETTY_FUNCTION__ << " lvalue overload"<<std::endl;
     }
 
     ~ListV2Node() {        
