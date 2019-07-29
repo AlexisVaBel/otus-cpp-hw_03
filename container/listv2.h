@@ -50,7 +50,7 @@ public:
 
 
     // copy constructor
-    ListV2(const ListV2 &that):m_curAlloc(rebindeAllocator(that.m_curAlloc)){
+    ListV2(const ListV2 &that):m_curAlloc(that.m_curAlloc){
         head =  m_curAlloc.allocate(1);
         m_curAlloc.construct(head,ListV2Node<T>(that.head->elem,nullptr));
         tail = head;
@@ -65,7 +65,7 @@ public:
     }
 
     // move constructor
-    ListV2(ListV2 &&that):m_curAlloc(rebindeAllocator(that.m_curAlloc)){
+    ListV2(ListV2 &&that):m_curAlloc(that.m_curAlloc){
         head = that.head;
         tail = that.tail;
         // no head, no tail - all between can be used without nullptring that... elemnts
@@ -91,10 +91,10 @@ public:
 
     bool empty() const {return head == nullptr;}
 
-    template <typename U>
-    void push_back(U&& elem){
+    template <typename... U>
+    void push_back(U&&... elem){
         auto newNode = m_curAlloc.allocate(1);
-        m_curAlloc.construct(newNode,ListV2Node<T>((std::forward<U>(elem)),nullptr));
+        m_curAlloc.construct(newNode,std::forward<U>(elem)...);
         if(head == nullptr){
             head = newNode;
         }

@@ -12,10 +12,13 @@ class ListV2Node{
 public:
     friend class ListV2_iterator<T>;
 
-    template <typename U>
-    ListV2Node(U&& u, ListV2Node<T> *nxt):elem(std::forward<U>(u)),next(nxt){
-//        std::cout << __PRETTY_FUNCTION__ << " lvalue overload"<<std::endl;
+
+    ListV2Node(T&& u):elem(std::move(u)),next(nullptr){
     }
+
+    ListV2Node(T& u):elem(u),next(nullptr){
+    }
+
 
     ~ListV2Node() {        
     }

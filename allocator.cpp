@@ -40,8 +40,9 @@ struct Cyclce_Map<0,T,Args ...>{
 
 
 struct hard{
- hard(const char*, size_t){};
- hard(const hard &) = delete;
+ hard(const char*, size_t){}
+// hard(const hard &) = delete;
+  hard(const hard &&) = delete;
 };
 
 
@@ -82,16 +83,17 @@ int main(int, char *[]) {
         cust_alloc_lst.push_back(i);
     }
 
-//    it_print_lst_value(std_alloc_lst);
-//    it_print_lst_value(cust_alloc_lst);
+    it_print_lst_value(std_alloc_lst);
+    it_print_lst_value(cust_alloc_lst);
 
-    ListV2<hard,AllocatorPull<hard,I_ELM_ALLOC>> cust_alloc_lst_hard;
-    cust_alloc_lst_hard.push_back(hard("one",1));
-    cust_alloc_lst_hard.push_back(hard("two",2));
 
-//    it_print_lst_value(cust_alloc_lst_hard);
+
 
     // some test cases: leaked, copy, move
+//    ListV2<hard,AllocatorPull<hard,I_ELM_ALLOC>> cust_alloc_lst_hard;
+//    cust_alloc_lst_hard.push_back(hard("one",1));
+//    cust_alloc_lst_hard.push_back(hard("two",2));
+
 //    ListV2<std::string> leaked_lst;
 //    auto tmp = std::string(1024, 'x');
 //    auto  const tmp2 = std::string(1024, 'o');
