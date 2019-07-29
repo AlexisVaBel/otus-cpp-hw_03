@@ -39,6 +39,12 @@ struct Cyclce_Map<0,T,Args ...>{
 // ~some functional works ))
 
 
+struct hard{
+ hard(const char*, size_t){};
+ hard(const hard &) = delete;
+};
+
+
 
 template <class T, class ... Args>
 void it_print_lst_value(ListV2<T,Args ...> &lst){
@@ -76,9 +82,14 @@ int main(int, char *[]) {
         cust_alloc_lst.push_back(i);
     }
 
-    it_print_lst_value(std_alloc_lst);
-    it_print_lst_value(cust_alloc_lst);
+//    it_print_lst_value(std_alloc_lst);
+//    it_print_lst_value(cust_alloc_lst);
 
+    ListV2<hard,AllocatorPull<hard,I_ELM_ALLOC>> cust_alloc_lst_hard;
+    cust_alloc_lst_hard.push_back(hard("one",1));
+    cust_alloc_lst_hard.push_back(hard("two",2));
+
+//    it_print_lst_value(cust_alloc_lst_hard);
 
     // some test cases: leaked, copy, move
 //    ListV2<std::string> leaked_lst;
