@@ -50,22 +50,27 @@ public:
 
 
     // copy constructor
-    ListV2(const ListV2 &that):m_curAlloc(that.m_curAlloc){
-        head =  m_curAlloc.allocate(1);
-        m_curAlloc.construct(head,ListV2Node<T>(that.head->elem,nullptr));
-        tail = head;
-        auto tmp = that.head->next;
-        while(tmp != nullptr){
-            auto newNode = m_curAlloc.allocate(1);
-            m_curAlloc.construct(newNode,ListV2Node<T>(tmp->elem,nullptr));
-            tail->next = newNode;
-            tail = newNode;
-            tmp = tmp->next;
-        };
-    }
+    // allocator should be not the same
+//    ListV2(ListV2 &that):m_curAlloc(rebindeAllocator(Allocator())){
+//        std::cout << __PRETTY_FUNCTION__ << " "<<" "<<std::endl;
+//        head =  m_curAlloc.allocate(1);
+//        std::cout << " Allocate "<<" 1 "<<std::endl;
+//        m_curAlloc.construct(head,(that.head->elem,nullptr));
+
+//        tail = head;
+//        std::cout << " Construct tail head "<<" "<<std::endl;
+//        auto tmp = that.head->next;
+//        while(tmp != nullptr){
+//            auto newNode = m_curAlloc.allocate(1);
+//            m_curAlloc.construct(newNode,(tmp->elem,nullptr));
+//            tail->next = newNode;
+//            tail = newNode;
+//            tmp = tmp->next;
+//        };
+//    }
 
     // move constructor
-    ListV2(ListV2 &&that):m_curAlloc(that.m_curAlloc){
+    ListV2(ListV2 &&that):m_curAlloc(std::move(that.m_curAlloc)){
         head = that.head;
         tail = that.tail;
         // no head, no tail - all between can be used without nullptring that... elemnts

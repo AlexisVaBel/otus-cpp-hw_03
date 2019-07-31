@@ -2,7 +2,7 @@
 #define ALLOCATORPULL_H
 
 #include <memory>
-//#include <iostream>
+#include <iostream>
 
 template <typename T, std::size_t CNT_RESERVE>
 class AllocatorPull{
@@ -27,6 +27,10 @@ public:
 
     pointer allocate(std::size_t n)
     {
+        std::cout << __PRETTY_FUNCTION__ << " "<< std::endl;
+        if(m_pnt != nullptr)
+        std::cout << __PRETTY_FUNCTION__ << " "<<m_pnt<<" "<<std::endl;
+
         if(m_pnt == nullptr){
             auto p = std::malloc(n * sizeof (value_type)* CNT_RESERVE);
             if (!p)
@@ -53,7 +57,7 @@ public:
     template<typename U, typename ...Args>
     void construct(U *p, Args &&...args)
     {        
-        new(p) U(std::forward<Args>(args)...);
+        new((void *)p) U(std::forward<Args>(args)...);
     }
 
     void destroy(T *p) {        

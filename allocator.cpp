@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <map>
+#include <list>
 #include <container/listv2.h>
 #include <alloc/allocatorpull.h>
 
@@ -40,9 +41,10 @@ struct Cyclce_Map<0,T,Args ...>{
 
 
 struct hard{
- hard(const char*, size_t){}
+ hard(const char*ch, size_t):_ch(ch){}
 // hard(const hard &) = delete;
-  hard(const hard &&) = delete;
+//  hard(const hard &&) = delete;
+ const char *_ch;
 };
 
 
@@ -60,51 +62,89 @@ void it_print_lst_value(ListV2<T,Args ...> &lst){
     using  cust_allocated_map = AllocatorPull<std::pair<const int, int>,I_ELM_ALLOC>;
 
 int main(int, char *[]) {
-    // maps
-    std::map <int, int> std_alloc_map;
-    std::map <int, int,std::less<int>, cust_allocated_map> cust_alloc_map;
+//   task of work
 
-    Cyclce_Map<I_ELM_ALLOC-1,int,int>::produceFact(std_alloc_map);
-    Cyclce_Map<I_ELM_ALLOC-1,int,int,std::less<int>, cust_allocated_map>::produceFact(cust_alloc_map);
+//    // maps
+//    std::map <int, int> std_alloc_map;
+//    std::map <int, int,std::less<int>, cust_allocated_map> cust_alloc_map;
 
-    for(auto k: std_alloc_map){
-        std::cout << k.first << " " << k.second << std::endl;
-    }
+//    Cyclce_Map<I_ELM_ALLOC-1,int,int>::produceFact(std_alloc_map);
+//    Cyclce_Map<I_ELM_ALLOC-1,int,int,std::less<int>, cust_allocated_map>::produceFact(cust_alloc_map);
 
-    for(auto k: cust_alloc_map){
-        std::cout << k.first << " " << k.second << std::endl;
-    }
+//    for(auto k: std_alloc_map){
+//        std::cout << k.first << " " << k.second << std::endl;
+//    }
 
-    // lists
-    ListV2<int> std_alloc_lst;
-    ListV2<int,AllocatorPull<int,I_ELM_ALLOC>> cust_alloc_lst;
-    for(int i=0; i<= I_ELM_ALLOC-1; ++i){
-        std_alloc_lst.push_back(i);
-        cust_alloc_lst.push_back(i);
-    }
+//    for(auto k: cust_alloc_map){
+//        std::cout << k.first << " " << k.second << std::endl;
+//    }
 
-    it_print_lst_value(std_alloc_lst);
-    it_print_lst_value(cust_alloc_lst);
+//    // lists
+//    ListV2<int> std_alloc_lst;
+//    ListV2<int,AllocatorPull<int,I_ELM_ALLOC>> cust_alloc_lst;
+//    for(int i=0; i<= I_ELM_ALLOC-1; ++i){
+//        std_alloc_lst.push_back(i);
+//        cust_alloc_lst.push_back(i);
+//    }
+
+//    it_print_lst_value(std_alloc_lst);
+//    it_print_lst_value(cust_alloc_lst);
+
+// ~ task of work
 
 
+    std::list<hard> lst1;
+    lst1.push_back(hard("hello",1));
+    lst1.push_back(hard("mormo",10));
+    for(auto tmp:lst1) std::cout << tmp._ch << std::endl;
+    std::list<hard> lst2(lst1);
+    for(auto tmp:lst2) std::cout << tmp._ch << std::endl;
+    //~
+//    std::list<std::string> lst1;
+//    auto tmp = std::string(1024, 'a');
+//    auto tmp2 = std::string(1024, 'b');
+//    lst1.emplace_back(tmp);
+//    lst1.emplace_back(tmp2);
+//    lst1.emplace_back(std::string(1024, 'c'));
+
+//    for(std::string str:lst1){
+//        std::cout <<str<<std::endl;
+//    }
+
+//    std::list<std::string> lst2(lst1);
+//    std::cout << " updated lst2" << std::endl;
+//    for(std::string str:lst1){
+//        std::cout <<str<<std::endl;
+//    }
+    //~
 
 
     // some test cases: leaked, copy, move
 //    ListV2<hard,AllocatorPull<hard,I_ELM_ALLOC>> cust_alloc_lst_hard;
 //    cust_alloc_lst_hard.push_back(hard("one",1));
-//    cust_alloc_lst_hard.push_back(hard("two",2));
+//    cust_alloc_lst_hard.push_back("two",2);
 
-//    ListV2<std::string> leaked_lst;
-//    auto tmp = std::string(1024, 'x');
-//    auto  const tmp2 = std::string(1024, 'o');
-//    leaked_lst.push_back(tmp);
-//    leaked_lst.push_back(tmp2);
-//    leaked_lst.push_back(std::string(1024, 'y'));
-//    leaked_lst.push_back(std::string(1024, 'z'));
-//    leaked_lst.push_back(std::string(1024, 'l'));
+
+    ListV2<std::string> leaked_lst;
+
+
+
+    auto tmp = std::string(1024, 'a');
+    auto tmp2 = std::string(1024, 'b');
+    leaked_lst.push_back(tmp);
+    leaked_lst.push_back(tmp2);
+    leaked_lst.push_back(std::string(1024, 'q'));
+    it_print_lst_value(leaked_lst);
+    ListV2<std::string> copy_lst(std::move(leaked_lst));
+    it_print_lst_value(copy_lst);
+
+//    leaked_lst.push_back(std::string(1024, 'd'));
+//    leaked_lst.push_back(std::string(1024, 'e'));
+//    std::cout << __PRETTY_FUNCTION__ <<" calling copy construction for list "<<std::endl;
+//    ListV2<std::string, AllocatorPull<std::string,I_ELM_ALLOC>> leaked_lst2(leaked_lst);
 
 //    ListV2<std::string> copy_lst = std::move(leaked_lst);
-//    it_print_lst_value(copy_lst);
+//    it_print_lst_value(leaked_lst);
     //~ some test cases: leaked, copy, move
     return 0;
 }
