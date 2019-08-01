@@ -27,9 +27,7 @@ public:
 
     pointer allocate(std::size_t n)
     {
-        std::cout << __PRETTY_FUNCTION__ << " "<< std::endl;
-        if(m_pnt != nullptr)
-        std::cout << __PRETTY_FUNCTION__ << " "<<m_pnt<<" "<<std::endl;
+//        std::cout << __PRETTY_FUNCTION__ << " "<< std::endl;
 
         if(m_pnt == nullptr){
             auto p = std::malloc(n * sizeof (value_type)* CNT_RESERVE);
@@ -57,7 +55,7 @@ public:
     template<typename U, typename ...Args>
     void construct(U *p, Args &&...args)
     {        
-        new((void *)p) U(std::forward<Args>(args)...);
+        new((U *)p) U(std::forward<Args>(args)...);
     }
 
     void destroy(T *p) {        

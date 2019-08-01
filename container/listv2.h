@@ -52,6 +52,11 @@ public:
     // copy constructor
     // allocator should be not the same
 //    ListV2(ListV2 &that):m_curAlloc(rebindeAllocator(Allocator())){
+//        std::cout << __PRETTY_FUNCTION__ << std::endl;
+
+//    }
+
+//    ListV2(ListV2 &that):m_curAlloc(rebindeAllocator(Allocator())){
 //        std::cout << __PRETTY_FUNCTION__ << " "<<" "<<std::endl;
 //        head =  m_curAlloc.allocate(1);
 //        std::cout << " Allocate "<<" 1 "<<std::endl;
@@ -70,12 +75,9 @@ public:
 //    }
 
     // move constructor
-    ListV2(ListV2 &&that):m_curAlloc(std::move(that.m_curAlloc)){
-        head = that.head;
-        tail = that.tail;
-        // no head, no tail - all between can be used without nullptring that... elemnts
-        that.head = nullptr;
-        that.tail = nullptr;
+    ListV2(ListV2 &&that):m_curAlloc(std::move(that.m_curAlloc)),head(nullptr),tail(nullptr){
+        std::swap(head,that.head);
+        std::swap(tail,that.tail);
     }
 
 
