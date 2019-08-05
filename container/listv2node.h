@@ -12,11 +12,8 @@ class ListV2Node{
 public:
     friend class ListV2_iterator<T>;
 
-
-    ListV2Node(T&& u):elem(std::move(u)),next(nullptr){
-    }
-
-    ListV2Node(T& u):elem(u),next(nullptr){
+    template<typename ... Args>
+    ListV2Node(Args && ... args):elem(std::forward<Args>(args)...),next(nullptr){
     }
 
 

@@ -14,7 +14,7 @@ class ListV2_iterator: public std::iterator< std::forward_iterator_tag, T>
 {
     friend class ListV2Node<T>;
 public:
-  ListV2_iterator(ListV2Node<T> *pnt): m_pnt(pnt){}
+    ListV2_iterator(ListV2Node<T> *pnt): m_pnt(pnt){}
 
     T& operator*(){
         return m_pnt->elem;
@@ -37,7 +37,7 @@ template <typename T, class Allocator = std::allocator<T> >
 class ListV2
 {
 public:
-    using iterator = ListV2_iterator<T>;
+    using  iterator             = ListV2_iterator<T>;
     using  allocator_type       = Allocator;
     using  pointer              = typename std::allocator_traits<allocator_type>::pointer;
     using  const_pointer        = typename std::allocator_traits<allocator_type>::const_pointer;
@@ -48,31 +48,26 @@ public:
 public:
     explicit ListV2(rebindeAllocator alloc = {}):m_curAlloc(rebindeAllocator(alloc)), head(nullptr), tail(nullptr){}
 
+    iterator begin() {return iterator(head);}
+    iterator end()   {return iterator(nullptr);}
+
+    iterator cbegin() const {return iterator(head);}
+    iterator cend()   const {return iterator(nullptr);}
+
+
+    bool empty() const {return head == nullptr;}
+
 
     // copy constructor
     // allocator should be not the same
-//    ListV2(ListV2 &that):m_curAlloc(rebindeAllocator(Allocator())){
-//        std::cout << __PRETTY_FUNCTION__ << std::endl;
+    ListV2(const ListV2 &that):m_curAlloc(rebindeAllocator()), head(nullptr), tail(nullptr){
+        auto it = that.cbegin();
+        while(it != that.cend()){
+            this->push_back(*it);
+            ++it;
+        }
+    }
 
-//    }
-
-//    ListV2(ListV2 &that):m_curAlloc(rebindeAllocator(Allocator())){
-//        std::cout << __PRETTY_FUNCTION__ << " "<<" "<<std::endl;
-//        head =  m_curAlloc.allocate(1);
-//        std::cout << " Allocate "<<" 1 "<<std::endl;
-//        m_curAlloc.construct(head,(that.head->elem,nullptr));
-
-//        tail = head;
-//        std::cout << " Construct tail head "<<" "<<std::endl;
-//        auto tmp = that.head->next;
-//        while(tmp != nullptr){
-//            auto newNode = m_curAlloc.allocate(1);
-//            m_curAlloc.construct(newNode,(tmp->elem,nullptr));
-//            tail->next = newNode;
-//            tail = newNode;
-//            tmp = tmp->next;
-//        };
-//    }
 
     // move constructor
     ListV2(ListV2 &&that):m_curAlloc(std::move(that.m_curAlloc)),head(nullptr),tail(nullptr){
@@ -89,14 +84,8 @@ public:
             m_curAlloc.deallocate(toDelete,1);
             toDelete = head;
         }
-
     }
 
-    iterator begin() {return ListV2_iterator<T>(head);}
-    iterator end()   {return ListV2_iterator<T>(nullptr);}
-
-
-    bool empty() const {return head == nullptr;}
 
     template <typename... U>
     void push_back(U&&... elem){

@@ -95,42 +95,28 @@ int main(int, char *[]) {
 
 // tests
 
-//    std::list<hard> lst1;
-//    lst1.push_back(hard("hello",1));
-//    lst1.push_back(hard("mormo",10));
-//    for(auto tmp:lst1) std::cout << tmp._ch << std::endl;
-//    std::list<hard> lst2(lst1);
-//    for(auto tmp:lst2) std::cout << tmp._ch << std::endl;
-
-//    std::list<std::string> lst1;
-//    auto tmp = std::string(1024, 'a');
-//    auto tmp2 = std::string(1024, 'b');
-//    lst1.emplace_back(tmp);
-//    lst1.emplace_back(tmp2);
-//    lst1.emplace_back(std::string(1024, 'c'));
-
-//    for(std::string str:lst1){
-//        std::cout <<str<<std::endl;
-//    }
-
-//    std::list<std::string> lst2(lst1);
-//    std::cout << " updated lst2" << std::endl;
-//    for(std::string str:lst1){
-//        std::cout <<str<<std::endl;
-//    }
-    //~
 
 
     // some test cases: leaked, copy, move
+    // hard
     ListV2<hard,AllocatorPull<hard,I_ELM_ALLOC>> cust_alloc_lst_hard;
-    cust_alloc_lst_hard.push_back(hard("one",1));
-
+    cust_alloc_lst_hard.push_back("one", 1);
     ListV2<hard,AllocatorPull<hard,I_ELM_ALLOC>> cust_alloc_lst_hard2(cust_alloc_lst_hard);
+    auto it = cust_alloc_lst_hard.begin();
+
+//    std::cout << (*it)._ch << std::endl;
+//    it = cust_alloc_lst_hard2.begin();
+//    std::cout << (*it)._ch << std::endl;
+//    cust_alloc_lst_hard2.push_back("two", 1);
+//    ++it;
+//    std::cout << (*it)._ch << std::endl;
+//    it = cust_alloc_lst_hard.begin();
+//    std::cout << (*it)._ch << std::endl;
+    // ~hard
+
+
 
 //    ListV2<std::string> leaked_lst;
-
-
-
 //    auto tmp = std::string(1024, 'a');
 //    auto tmp2 = std::string(1024, 'b');
 //    leaked_lst.push_back(tmp);
